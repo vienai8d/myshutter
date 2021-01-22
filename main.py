@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 import paho.mqtt.client as mqtt
 import json
 
-import shutter
+from shutter import shutter
 
 def main():
     parser = ArgumentParser()
@@ -24,6 +24,21 @@ def main():
         print(msg.topic + " " + str(msg.payload))
         data = json.loads(msg.payload.decode("utf-8"))["data"]
         print(data)
+        if data == 'open':
+            shutter.setup_with_init()
+            shutter.check()
+            shutter.cmd(shutter.PIN_UP)
+            shutter.check()
+        elif data == 'close':
+            shutter.setup_with_init()
+            shutter.check()
+            shutter.cmd(shutter.PIN_DOWN)
+            shutter.check()
+        elif data == 'stop':
+            shutter.setup_with_init()
+            shutter.check()
+            shutter.cmd(shutter.PIN_STOP)
+            shutter.check()
 
     client = mqtt.Client()
     client.username_pw_set("token:%s"%TOKEN)
