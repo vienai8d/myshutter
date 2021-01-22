@@ -25,20 +25,17 @@ def main():
         data = json.loads(msg.payload.decode("utf-8"))["data"]
         print(data)
         if data == 'open':
-            shutter.setup_with_init()
-            shutter.check()
+            shutter.setup()
             shutter.cmd(shutter.PIN_UP)
-            shutter.check()
+            shutter.cleanup()
         elif data == 'close':
-            shutter.setup_with_init()
-            shutter.check()
+            shutter.setup()
             shutter.cmd(shutter.PIN_DOWN)
-            shutter.check()
+            shutter.cleanup()
         elif data == 'stop':
-            shutter.setup_with_init()
-            shutter.check()
+            shutter.setup()
             shutter.cmd(shutter.PIN_STOP)
-            shutter.check()
+            shutter.cleanup()
 
     client = mqtt.Client()
     client.username_pw_set("token:%s"%TOKEN)
