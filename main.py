@@ -8,13 +8,15 @@ def main():
     parser = ArgumentParser()
     parser.add_argument('token')
     parser.add_argument('--topic', default='home/shutter')
+    parser.add_argument('--cacert', default='mqtt.beebotte.com.pem')
+
     args = parser.parse_args()
 
     TOKEN = args.token
     HOSTNAME = "mqtt.beebotte.com"
     PORT = 8883
     TOPIC = args.topic
-    CACERT = "mqtt.beebotte.com.pem"
+    CACERT = args.cacert
 
     def on_connect(client, userdata, flags, respons_code):
         print('status {0}'.format(respons_code))
