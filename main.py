@@ -34,14 +34,18 @@ def main():
         data = json.loads(msg.payload.decode("utf-8"))["data"]
         print(data)
         if data == 'open':
+            post_to_slack('[INFO] Open myshutter.')
             shutter.setup()
             shutter.cmd(shutter.PIN_UP)
             shutter.cleanup()
         elif data == 'close':
+            post_to_slack('[INFO] Close myshutter.')
+            shutter.setup()
             shutter.setup()
             shutter.cmd(shutter.PIN_DOWN)
             shutter.cleanup()
         elif data == 'stop':
+            post_to_slack('[INFO] Stop myshutter.')
             shutter.setup()
             shutter.cmd(shutter.PIN_STOP)
             shutter.cleanup()
@@ -54,10 +58,10 @@ def main():
 
     try:
         client.connect(HOSTNAME, port=PORT, keepalive=60)
-        post_to_slack('[INFO] myshutter is launched now.')
+        post_to_slack('[INFO] myshutter is launched.')
         client.loop_forever()
     except Exception as e:
-        post_to_slack(f'[ERROR] {e}')
+        post_to_slack(f'[ERROR] myshtter is terminated. Error message: {e}.')
 
 if __name__ == '__main__':
     main()
