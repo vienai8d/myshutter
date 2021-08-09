@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import paho.mqtt.client as mqtt
 import json
+import requests
 
 from shutter import shutter
 
@@ -9,6 +10,7 @@ def main():
     parser.add_argument('token')
     parser.add_argument('--topic', default='home/shutter')
     parser.add_argument('--cacert', default='mqtt.beebotte.com.pem')
+    parser.add_argument('--slack', help='Slack webhook URL', default=None)
 
     args = parser.parse_args()
 
@@ -17,9 +19,14 @@ def main():
     PORT = 8883
     TOPIC = args.topic
     CACERT = args.cacert
+    SLACK = args.slack
+
+    def post_to_slack(message):
+        if SLACK:
+            requests.post(SLACK, headers={'content-type': 'application/json'}, data=json.dumps({'text': message}))
 
     def on_connect(client, userdata, flags, respons_code):
-        print('status {0}'.format(respons_code))
+        print(f'status {respons_code}')
         client.subscribe(TOPIC)
 
     def on_message(client, userdata, msg):
@@ -44,8 +51,13 @@ def main():
     client.on_connect = on_connect
     client.on_message = on_message
     client.tls_set(CACERT)
-    client.connect(HOSTNAME, port=PORT, keepalive=60)
-    client.loop_forever()
+
+    try:
+        client.connect(HOSTNAME, port=PORT, keepalive=60)
+        post_to_slack('[INFO] myshutter is launched now.')
+        client.loop_forever()
+    except Exception as e:
+        post_to_slack(f'[ERROR] {e}')
 
 if __name__ == '__main__':
     main()
